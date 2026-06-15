@@ -5,28 +5,98 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aplikasi Perpustakaan - Login System</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f9; }
-        .container { max-width: 950px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        input, button { padding: 10px; margin: 5px 0; width: 100%; box-sizing: border-box; border-radius: 4px; border: 1px solid #ccc; }
-        button { background-color: #28a745; color: white; border: none; cursor: pointer; font-weight: bold; transition: background 0.2s; }
-        button:hover { opacity: 0.9; }
+        /* Base Styling */
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 0; 
+            padding: 20px;
+            min-height: 100vh;
+            box-sizing: border-box;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* BACKGROUND LOGIN & BERANDA TEMA PERADILAN (MA) Sesuai image_9338f9.jpg */
+            background: linear-gradient(135deg, #002d24, #004d40, #0d47a1, #001f3f);
+            background-size: 400% 400%;
+            animation: gradientBergerak 12s ease infinite;
+            transition: background 0.5s ease;
+        }
+        
+        @keyframes gradientBergerak {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Container Utama & Kotak Login */
+        .container { 
+            width: 100%;
+            max-width: 950px; 
+            margin: auto; 
+            background: rgba(255, 255, 255, 0.97); 
+            padding: 25px; 
+            border-radius: 12px; 
+            box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+            border-top: 6px solid #d4af37; /* Aksen Emas MA */
+        }
+
+        .login-box { 
+            width: 100%;
+            max-width: 420px; 
+            margin: auto; 
+            background: rgba(255, 255, 255, 0.96); 
+            padding: 35px; 
+            border-radius: 16px; 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.35); 
+            border-top: 5px solid #d4af37; 
+        }
+        
+        input, button { padding: 11px; margin: 6px 0; width: 100%; box-sizing: border-box; border-radius: 6px; border: 1px solid #ccc; font-size: 14px; }
+        input:focus { border-color: #00796b; outline: none; box-shadow: 0 0 5px rgba(0,121,107,0.3); }
+        
+        button { background-color: #005b4f; color: white; border: none; cursor: pointer; font-weight: bold; transition: background 0.2s; }
+        button:hover { background-color: #004d40; }
         button:disabled { background-color: #cccccc !important; cursor: not-allowed; }
         button.download { background-color: #007bff; }
         button.clear { background-color: #dc3545; }
-        button.logout { background-color: #6c757d; margin-top: 10px; }
-        .login-box { max-width: 420px; margin: 60px auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        .login-desc { font-size: 13px; color: #555; text-align: justify; line-height: 1.6; background: #f8f9fa; padding: 12px; border-radius: 6px; border-left: 4px solid #007bff; margin-bottom: 20px; }
-        .copyright { text-align: center; font-size: 11px; color: #888; margin-top: 25px; border-top: 1px solid #eee; padding-top: 15px; }
         
-        /* Modifikasi Area Pencarian */
-        .search-box { background-color: #e9ecef; padding: 15px; border-radius: 6px; margin: 20px 0 10px 0; border-left: 5px solid #007bff; }
+        /* Tombol Logout Atas Hijau */
+        button.logout-top { 
+            background-color: #2E7D32; 
+            color: white; 
+            width: auto; 
+            padding: 6px 12px; 
+            font-size: 12px; 
+            margin: 0; 
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        button.logout-top:hover { background-color: #1B5E20; }
+        
+        /* Badge Info Statistik Koleksi */
+        .stats-badge {
+            background-color: #ef6c00;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+        
+        .login-desc { font-size: 12.5px; color: #444; text-align: justify; line-height: 1.6; background: #f0f4f2; padding: 12px; border-radius: 6px; border-left: 4px solid #005b4f; margin-bottom: 20px; }
+        .copyright { text-align: center; font-size: 11px; color: #777; margin-top: 25px; border-top: 1px solid #eee; padding-top: 15px; }
+        
+        /* Area Pencarian */
+        .search-box { background-color: #e9ecef; padding: 15px; border-radius: 6px; margin: 20px 0 10px 0; border-left: 5px solid #004d40; }
         .search-container { display: flex; gap: 8px; align-items: center; }
-        .search-container input { border: 2px solid #007bff; flex: 1; margin: 0; }
+        .search-container input { border: 2px solid #00796b; flex: 1; margin: 0; }
         .search-container button { width: auto; background-color: #6c757d; margin: 0; white-space: nowrap; }
 
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
-        th { background-color: #343a40; color: white; }
+        th { background-color: #004d40; color: white; }
         
         /* Komponen Tombol Aksi */
         .btn-link { background-color: #ffc107; color: #212529; text-decoration: none; padding: 6px 10px; border-radius: 4px; font-size: 12px; font-weight: bold; display: inline-block; text-align: center; margin-right: 3px; }
@@ -39,41 +109,80 @@
         .btn-delete:hover { background-color: #bd2130; }
         
         .no-data { text-align: center; color: #888; font-style: italic; }
-        .hidden { display: none; }
-        .user-badge { display: inline-block; padding: 5px 10px; background: #17a2b8; color: white; border-radius: 4px; font-size: 14px; margin-bottom: 15px; }
+        .hidden { display: none !important; }
+        .user-badge { display: inline-block; padding: 6px 10px; background: #17a2b8; color: white; border-radius: 4px; font-size: 12px; font-weight: bold; margin-right: 8px; }
         .loading { font-style: italic; color: #007bff; margin-bottom: 10px; font-weight: bold; }
         .row-flex { display: flex; gap: 10px; }
         .row-flex input { flex: 1; }
         .row-flex input#tahun { max-width: 150px; }
         
-        /* Efek Highlighter Penanda Pencarian */
         mark { background-color: #ffeb3b; color: #000; padding: 2px 0; border-radius: 2px; }
+
+        /* Komponen Overlay Loading System */
+        .loading-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(255, 255, 255, 0.96);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+        .spinner {
+            width: 45px;
+            height: 45px;
+            border: 5px solid #e9ecef;
+            border-top: 5px solid #004d40;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            margin-bottom: 15px;
+        }
+        .loading-text { font-family: Arial, sans-serif; font-size: 15px; font-weight: bold; color: #333; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
+<div id="globalLoader" class="loading-overlay hidden">
+    <div class="spinner"></div>
+    <div id="globalLoaderText" class="loading-text">Memproses Sistem KALEA...</div>
+</div>
+
 <div id="loginPage" class="login-box">
-    <h2 style="text-align: center; margin-bottom: 5px; color: #333;">🔒 Login KALEA</h2>
-    <h4 style="text-align: center; margin-top: 0; margin-bottom: 20px; color: #007bff;">Katalog Legal E-Aplikasi</h4>
+    <h2 style="text-align: center; margin-bottom: 5px; color: #004d40; font-weight: bold;">🏛️ KALEA LOGIN</h2>
+    <h4 style="text-align: center; margin-top: 0; margin-bottom: 20px; color: #b89324; letter-spacing: 1px;">Katalog Legal E-Aplikasi</h4>
     
     <div class="login-desc">
-        <strong>KALEA</strong> adalah sistem perpustakaan digital berbasis cloud yang dirancang untuk mengelola, menyimpan, dan menyaring data dokumen hukum serta literatur legal secara elektronik. Melalui integrasi database real-time, aplikasi ini mempermudah pencarian arsip dan akses langsung ke berkas fisik secara aman dan terpusat.
+        <strong>KALEA</strong> adalah sistem perpustakaan digital berbasis cloud yang dirancang untuk mengelola, menyimpan, dan menyaring data dokumen hukum serta literatur legal secara elektronik di lingkungan peradilan.
     </div>
 
-    <input type="text" id="username" placeholder="Username">
-    <input type="password" id="password" placeholder="Password">
-    <button onclick="prosesLogin()" style="background-color: #007bff; margin-top: 10px;">Masuk Aplikasi</button>
+    <label style="font-size: 13px; font-weight: bold; color: #333; display: block; margin-bottom: 2px;">Username</label>
+    <input type="text" id="username" placeholder="Masukkan Username">
+    
+    <label style="font-size: 13px; font-weight: bold; color: #333; display: block; margin-top: 8px; margin-bottom: 2px;">Password</label>
+    <input type="password" id="password" placeholder="Masukkan Password">
+    
+    <button onclick="prosesLogin()" style="background-color: #005b4f; margin-top: 15px; padding: 12px; font-size: 15px;">Masuk Aplikasi</button>
     
     <div class="copyright">
-        &copy; 2026 KALEA (Rico) - Katalog Legal E-Aplikasi. All Rights Reserved.<br>
-        <span style="font-size: 10px; color: #aaa;">Sistem Database Terintegrasi Google Cloud</span>
+        &copy; 2026 KALEA - Katalog Legal E-Aplikasi. All Rights Reserved.<br>
+        <span style="font-size: 10px; color: #aaa;">Sistem Database Terintegrasi Cloud</span>
     </div>
 </div>
 
 <div id="mainPage" class="container hidden">
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-        <h2>📚 Perpustakaan Digital KALEA</h2>
-        <span id="roleBadge" class="user-badge"></span>
+    
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px;">
+        <h2 style="margin: 0; color: #004d40;" id="welcomeTitle">📚 Perpustakaan Digital KALEA</h2>
+        <div style="display: flex; align-items: center;">
+            <span id="roleBadge" class="user-badge"></span>
+            <button class="logout-top" onclick="logout()">🚪 Keluar</button>
+        </div>
+    </div>
+    
+    <div id="statsContainer">
+        <span id="totalBukuBadge" class="stats-badge">📊 Total Koleksi: 0 Dokumen</span>
     </div>
     
     <div id="adminForm" class="hidden">
@@ -84,9 +193,12 @@
             <input type="text" id="penulis" placeholder="Penulis / Pengarang">
             <input type="number" id="tahun" placeholder="Tahun">
         </div>
-        <input type="url" id="driveLink" placeholder="Masukkan Link Google Drive (https://...)">
-        <button id="btnSimpan" onclick="tambahBuku()">Simpan Buku & Link</button>
-        <button id="btnBatalEdit" class="clear hidden" onclick="resetForm()" style="margin-top: 5px; background-color: #6c757d;">Batal Edit</button>
+        <input type="url" id="driveLink" placeholder="Masukkan Tautan Google Drive (https://drive.google.com/...)">
+        
+        <div style="display: flex; gap: 8px;">
+            <button id="btnSimpan" onclick="tambahBuku()" style="background-color: #004d40; flex: 2;">Simpan Buku & Link</button>
+            <button id="btnBatalEdit" class="clear hidden" onclick="resetForm()" style="margin: 6px 0; background-color: #78909c; flex: 1;">✕ Batal</button>
+        </div>
     </div>
 
     <div class="search-box">
@@ -114,7 +226,6 @@
     </table>
 
     <button id="btnHapusSemua" class="clear hidden" onclick="hapusSemua()" style="margin-top: 30px;">Hapus Semua Data Aplikasi</button>
-    <button class="logout" onclick="logout()">Logout</button>
 </div>
 
 <script>
@@ -128,18 +239,32 @@
         if (e.key === 'Enter') prosesLogin();
     });
 
-    // Menggunakan sessionStorage untuk keamanan akun bersama (Shared PC)
     window.onload = function() {
-        let savedRole = sessionStorage.getItem("kalea_role_secure");
-        if (savedRole) {
-            try {
-                currentUserRole = atob(savedRole); // Dekode role sederhana
+        try {
+            let savedRole = sessionStorage.getItem("kalea_role_secure");
+            if (savedRole) {
+                currentUserRole = atob(savedRole); 
                 if (currentUserRole === "admin" || currentUserRole === "user") {
                     bukaAplikasi();
                 }
-            } catch(e) {
-                sessionStorage.clear();
             }
+        } catch(e) {}
+        let loader = document.getElementById('globalLoader');
+        if (loader) loader.classList.add('hidden');
+    };
+
+    function tampilLoader(pesan, durasi, callback) {
+        const loader = document.getElementById('globalLoader');
+        const loaderText = document.getElementById('globalLoaderText');
+        if (loader && loaderText) {
+            loaderText.innerText = pesan;
+            loader.classList.remove('hidden');
+            setTimeout(function() {
+                loader.classList.add('hidden');
+                if(callback) callback();
+            }, durasi);
+        } else {
+            if(callback) callback();
         }
     }
 
@@ -147,14 +272,12 @@
         let userIn = document.getElementById('username').value.trim().toLowerCase();
         let passIn = document.getElementById('password').value.trim();
 
-        if (userIn === 'admin' && passIn === '123') {
-            currentUserRole = "admin";
-            sessionStorage.setItem("kalea_role_secure", btoa("admin"));
-            bukaAplikasi();
-        } else if (userIn === 'user' && passIn === '123') {
-            currentUserRole = "user";
-            sessionStorage.setItem("kalea_role_secure", btoa("user"));
-            bukaAplikasi();
+        if ((userIn === 'admin' || userIn === 'user') && passIn === '123') {
+            currentUserRole = userIn;
+            tampilLoader("Memverifikasi Akun & Mengamankan Sesi...", 400, function() {
+                try { sessionStorage.setItem("kalea_role_secure", btoa(userIn)); } catch(e) {}
+                bukaAplikasi();
+            });
         } else {
             alert('Username atau Password salah!');
         }
@@ -165,16 +288,19 @@
         document.getElementById('mainPage').classList.remove('hidden');
         
         let badge = document.getElementById('roleBadge');
+        let welcome = document.getElementById('welcomeTitle');
         badge.innerText = "Sesi: " + currentUserRole.toUpperCase();
 
         if (currentUserRole === 'admin') {
+            welcome.innerText = "📚 Perpustakaan KALEA (ADMINISTRATOR)";
             document.getElementById('adminForm').classList.remove('hidden');
             document.getElementById('btnHapusSemua').classList.remove('hidden');
-            badge.style.backgroundColor = "#dc3545"; 
+            badge.style.backgroundColor = "#2E7D32"; 
         } else {
+            welcome.innerText = "📚 Perpustakaan KALEA (GUEST USER)";
             document.getElementById('adminForm').classList.add('hidden');
             document.getElementById('btnHapusSemua').classList.add('hidden');
-            badge.style.backgroundColor = "#28a745"; 
+            badge.style.backgroundColor = "#1976D2"; 
         }
 
         resetForm();
@@ -192,8 +318,9 @@
                 return res.json();
             })
             .then(data => {
-                // Menghilangkan duplikasi data tidak terdefinisi
                 daftarBuku = data.filter(item => item && item.id);
+                // FITUR TAMBAHAN 2: Update Counter jumlah buku otomatis
+                document.getElementById('totalBukuBadge').innerText = `📊 Total Koleksi: ${daftarBuku.length} Dokumen`;
                 tampilkanData();
                 loader.classList.add('hidden');
             })
@@ -210,7 +337,6 @@
         let driveLink = document.getElementById('driveLink').value.trim();
         let editId = document.getElementById('editRowId').value;
 
-        // Sanitasi dasar mencegah injeksi tanda kutip ganda berlebih
         judul = judul.replace(/"/g, "'");
         penulis = penulis.replace(/"/g, "'");
 
@@ -225,8 +351,9 @@
             return;
         }
 
-        if (!driveLink.startsWith('http://') && !driveLink.startsWith('https://')) {
-            alert('URL Google Drive wajib valid (dimulai dengan https://)!');
+        // FITUR TAMBAHAN 3: Validasi Ketat Keamanan Link Google Cloud
+        if (!driveLink.includes('drive.google.com') && !driveLink.includes('docs.google.com')) {
+            alert('⚠️ Tautan ditolak! Pastikan Anda memasukkan tautan Google Drive atau Google Docs yang valid.');
             return;
         }
 
@@ -277,7 +404,6 @@
         tbody.innerHTML = '';
         
         let kataKunci = document.getElementById('cariBuku').value.trim().toLowerCase();
-        
         let dataDifilter = daftarBuku.filter(buku => {
             return (buku.judul && buku.judul.toLowerCase().includes(kataKunci)) || 
                    (buku.penulis && buku.penulis.toLowerCase().includes(kataKunci)) ||
@@ -297,28 +423,15 @@
             tr.appendChild(tdNo);
 
             let tdJudul = document.createElement('td');
-            // Menambahkan fitur highlight visual yang aman dari manipulasi teks HTML luar
-            if (kataKunci) {
-                tdJudul.innerHTML = highlightText(buku.judul || '-', kataKunci);
-            } else {
-                tdJudul.textContent = buku.judul || '-';
-            }
+            tdJudul.innerHTML = kataKunci ? highlightText(buku.judul || '-', kataKunci) : (buku.judul || '-');
             tr.appendChild(tdJudul);
 
             let tdPenulis = document.createElement('td');
-            if (kataKunci) {
-                tdPenulis.innerHTML = highlightText(buku.penulis || '-', kataKunci);
-            } else {
-                tdPenulis.textContent = buku.penulis || '-';
-            }
+            tdPenulis.innerHTML = kataKunci ? highlightText(buku.penulis || '-', kataKunci) : (buku.penulis || '-');
             tr.appendChild(tdPenulis);
 
             let tdTahun = document.createElement('td');
-            if (kataKunci) {
-                tdTahun.innerHTML = highlightText(buku.tahun || '-', kataKunci);
-            } else {
-                tdTahun.textContent = buku.tahun || '-';
-            }
+            tdTahun.innerHTML = kataKunci ? highlightText(buku.tahun || '-', kataKunci) : (buku.tahun || '-');
             tr.appendChild(tdTahun);
 
             let tdAksi = document.createElement('td');
@@ -330,7 +443,6 @@
             aLink.textContent = "📁 Buka Drive";
             tdAksi.appendChild(aLink);
 
-            // Fitur Tambahan Cepat: Salin tautan berkas
             let btnCopy = document.createElement('button');
             btnCopy.className = "btn-copy";
             btnCopy.textContent = "📋 Salin Link";
@@ -376,7 +488,6 @@
         document.getElementById('penulis').value = penulis;
         document.getElementById('tahun').value = tahun;
         document.getElementById('driveLink').value = driveLink;
-        
         document.getElementById('btnSimpan').innerText = "Update Perubahan Buku";
         document.getElementById('btnBatalEdit').classList.remove('hidden');
         document.getElementById('judul').focus();
@@ -389,7 +500,6 @@
         document.getElementById('penulis').value = "";
         document.getElementById('tahun').value = "";
         document.getElementById('driveLink').value = "";
-        
         let btn = document.getElementById('btnSimpan');
         btn.disabled = false;
         btn.innerText = "Simpan Buku & Link";
@@ -401,25 +511,17 @@
         if (confirm(`Apakah Anda yakin ingin menghapus buku "${judul}"?`)) {
             document.getElementById('loadingText').classList.remove('hidden');
             document.getElementById('loadingText').innerText = "Menghapus data di cloud...";
-            
             fetch(`${webAppUrl}?action=deleteRow&id=${id}&token=${apiKey}&_nocache=${new Date().getTime()}`)
-            .then(() => {
-                ambilDataDariSheets();
-            });
+            .then(() => { ambilDataDariSheets(); });
         }
     }
 
     function downloadCSV() {
-        if (daftarBuku.length === 0) {
-            alert('Tidak ada data untuk didownload!');
-            return;
-        }
-        
+        if (daftarBuku.length === 0) { alert('Tidak ada data!'); return; }
         let csvContent = "\uFEFFNo;Judul Buku;Penulis;Tahun;Link Google Drive\n";
         daftarBuku.forEach((buku, index) => {
             csvContent += `${index + 1};"${(buku.judul || '-').replace(/"/g, '""')}";"${(buku.penulis || '-').replace(/"/g, '""')}";"${buku.tahun || '-'}";"${buku.driveLink || '-'}"\n`;
         });
-
         let blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
         let link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
@@ -431,26 +533,24 @@
 
     function hapusSemua() {
         if (currentUserRole !== 'admin') return;
-        if (confirm('⚠️ PERINGATAN FATAL!\nApakah Anda yakin ingin menghapus seluruh isi database di Google Sheets?')) {
+        if (confirm('⚠️ PERINGATAN FATAL!\nHapus seluruh database Google Sheets?')) {
             document.getElementById('loadingText').classList.remove('hidden');
-            document.getElementById('loadingText').innerText = "Mengosongkan cloud database...";
-            
             fetch(`${webAppUrl}?action=clearAll&token=${apiKey}&_nocache=${new Date().getTime()}`)
-            .then(() => {
-                ambilDataDariSheets();
-            });
+            .then(() => { ambilDataDariSheets(); });
         }
     }
 
     function logout() {
         if(confirm("Apakah Anda ingin keluar dari aplikasi KALEA?")) {
-            currentUserRole = "";
-            sessionStorage.clear(); // Bersihkan seluruh memori login browser
-            document.getElementById('username').value = "";
-            document.getElementById('password').value = "";
-            document.getElementById('cariBuku').value = "";
-            document.getElementById('mainPage').classList.add('hidden');
-            document.getElementById('loginPage').classList.remove('hidden');
+            tampilLoader("Menghapus Sesi Pengguna & Keluar...", 400, function() {
+                currentUserRole = "";
+                try { sessionStorage.clear(); } catch(e) {}
+                document.getElementById('username').value = "";
+                document.getElementById('password').value = "";
+                document.getElementById('cariBuku').value = "";
+                document.getElementById('mainPage').classList.add('hidden');
+                document.getElementById('loginPage').classList.remove('hidden');
+            });
         }
     }
 </script>
