@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Perpustakaan - Login System</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f9; }
+        .container { max-width: 950px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        input, button { padding: 10px; margin: 5px 0; width: 100%; box-sizing: border-box; border-radius: 4px; border: 1px solid #ccc; }
+        button { background-color: #28a745; color: white; border: none; cursor: pointer; font-weight: bold; }
+        button:hover { opacity: 0.9; }
+        button.download { background-color: #007bff; }
+        button.clear { background-color: #dc3545; }
+        button.logout { background-color: #6c757d; margin-top: 10px; }
+        .login-box { max-width: 420px; margin: 60px auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        .login-desc { font-size: 13px; color: #555; text-align: justify; line-height: 1.6; background: #f8f9fa; padding: 12px; border-radius: 6px; border-left: 4px solid #007bff; margin-bottom: 20px; }
+        .copyright { text-align: center; font-size: 11px; color: #888; margin-top: 25px; border-top: 1px solid #eee; padding-top: 15px; }
+        .search-box { background-color: #e9ecef; padding: 15px; border-radius: 6px; margin: 20px 0 10px 0; border-left: 5px solid #007bff; }
+        .search-box input { border: 2px solid #007bff; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background-color: #343a40; color: white; }
+        .btn-link { background-color: #ffc107; color: #212529; text-decoration: none; padding: 6px 10px; border-radius: 4px; font-size: 12px; font-weight: bold; display: inline-block; text-align: center; margin-right: 3px; }
+        .btn-link:hover { background-color: #e0a800; }
+        .btn-edit { background-color: #007bff; color: white; padding: 6px 10px; border-radius: 4px; font-size: 12px; border: none; cursor: pointer; font-weight: bold; width: auto; display: inline-block; margin-right: 3px; }
+        .btn-edit:hover { background-color: #0056b3; }
+        .btn-delete { background-color: #dc3545; color: white; padding: 6px 10px; border-radius: 4px; font-size: 12px; border: none; cursor: pointer; font-weight: bold; width: auto; display: inline-block; }
+        .btn-delete:hover { background-color: #bd2130; }
+        .no-data { text-align: center; color: #888; font-style: italic; }
+        .hidden { display: none; }
+        .user-badge { display: inline-block; padding: 5px 10px; background: #17a2b8; color: white; border-radius: 4px; font-size: 14px; margin-bottom: 15px; }
+        .loading { font-style: italic; color: #007bff; margin-bottom: 10px; }
+        .row-flex { display: flex; gap: 10px; }
+        .row-flex input { flex: 1; }
+        .row-flex input#tahun { max-width: 150px; }
+    </style>
+</head>
+<body>
+
+<div id="loginPage" class="login-box">
+    <h2 style="text-align: center; margin-bottom: 5px; color: #333;">🔒 Login KALEA</h2>
+    <h4 style="text-align: center; margin-top: 0; margin-bottom: 20px; color: #007bff;">Katalog Legal E-Aplikasi</h4>
+    
+    <div class="login-desc">
+        <strong>KALEA</strong> adalah sistem perpustakaan digital berbasis cloud yang dirancang untuk mengelola, menyimpan, dan menyaring data dokumen hukum serta literatur legal secara elektronik. Melalui integrasi database real-time, aplikasi ini mempermudah pencarian arsip dan akses langsung ke berkas fisik secara aman dan terpusat.
+    </div>
+
+    <input type="text" id="username" placeholder="Username (admin / user)">
+    <input type="password" id="password" placeholder="Password (123)">
+    <button onclick="prosesLogin()" style="background-color: #007bff; margin-top: 10px;">Masuk Aplikasi</button>
+    
+    <div class="copyright">
+        &copy; 2026 KALEA (Rico) - Katalog Legal E-Aplikasi. All Rights Reserved.<br>
+        <span style="font-size: 10px; color: #aaa;">Sistem Database Terintegrasi Google Cloud</span>
+    </div>
+</div>
+
+<div id="mainPage" class="container hidden">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h2>📚 Perpustakaan Digital KALEA</h2>
+        <span id="roleBadge" class="user-badge"></span>
+    </div>
+    
+    <div id="adminForm" class="hidden">
+        <h4 id="formTitle" style="margin-bottom: 5px; color: #333;">Tambah Data Buku Baru:</h4>
+        <input type="hidden" id="editRowId" value="">
+        <div class="row-flex">
+            <input type="text" id="judul" placeholder="Judul Buku / Dokumen">
+            <input type="text" id="penulis" placeholder="Penulis / Pengarang">
+            <input type="number" id="tahun" placeholder="Tahun">
+        </div>
+        <input type="url" id="driveLink" placeholder="Masukkan Link Google Drive (https://...)">
+        <button id="btnSimpan" onclick="tambahBuku()">Simpan Buku & Link</button>
+        <button id="btnBatalEdit" class="clear hidden" onclick="resetForm()" style="margin-top: 5px; background-color: #6c757d;">Batal Edit</button>
+    </div>
+
+    <div class="search-box">
+        <label for="cariBuku" style="font-weight: bold; color: #333;">🔍 Cari Buku, Penulis, atau Tahun:</label>
+        <input type="text" id="cariBuku" onkeyup="tampilkanData()" placeholder="Ketik untuk mencari...">
+    </div>
+
+    <div id="loadingText" class="loading hidden">Menghubungkan ke Google Sheets...</div>
+    <button class="download" onclick="downloadCSV()">📥 Download Semua Data (CSV/Excel)</button>
+
+    <table id="tabelBuku">
+        <thead>
+            <tr>
+                <th style="width: 5%;">No</th>
+                <th>Judul Buku</th>
+                <th>Penulis</th>
+                <th style="width: 10%;">Tahun</th>
+                <th style="width: 30%;">Aksi / Link Google Drive</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <button id="btnHapusSemua" class="clear hidden" onclick="hapusSemua()" style="margin-top: 30px;">Hapus Semua Data Aplikasi</button>
+    <button class="logout" onclick="logout()">Logout</button>
+</div>
+
+<script>
+    // Silakan ganti URL di bawah jika URL deployment Apps Script Anda berubah setelah deploy ulang
+    const webAppUrl = "https://script.google.com/macros/s/AKfycbyXmdWOor21bqz3A_jwvJmXIWTHMOwvQ3SuC4J_lOm6XCo8jOV7Nlc12VRchk853qCOVA/exec";
+
+    let daftarBuku = [];
+    let currentUserRole = ""; 
+
+    function prosesLogin() {
+        let userIn = document.getElementById('username').value.trim().toLowerCase();
+        let passIn = document.getElementById('password').value.trim();
+
+        if (userIn === 'admin' && passIn === '123') {
+            currentUserRole = "admin";
+            bukaAplikasi();
+        } else if (userIn === 'user' && passIn === '123') {
+            currentUserRole = "user";
+            bukaAplikasi();
+        } else {
+            alert('Username atau Password salah!\nGunakan admin/123 atau user/123');
+        }
+    }
+    
+    function bukaAplikasi() {
+        document.getElementById('loginPage').classList.add('hidden');
+        document.getElementById('mainPage').classList.remove('hidden');
+        
+        let badge = document.getElementById('roleBadge');
+        badge.innerText = "Sesi: " + currentUserRole.toUpperCase();
+
+        if (currentUserRole === 'admin') {
+            document.getElementById('adminForm').classList.remove('hidden');
+            document.getElementById('btnHapusSemua').classList.remove('hidden');
+            badge.style.backgroundColor = "#dc3545"; 
+        } else {
+            document.getElementById('adminForm').classList.add('hidden');
+            document.getElementById('btnHapusSemua').classList.add('hidden');
+            badge.style.backgroundColor = "#28a745"; 
+        }
+
+        resetForm();
+        ambilDataDariSheets();
+    }
+
+    function ambilDataDariSheets() {
+        document.getElementById('loadingText').classList.remove('hidden');
+        document.getElementById('loadingText').innerText = "Memuat data dari Google Sheets...";
+
+        // Penambahan anti-cache generator agar data yang ditampilkan selalu yang paling baru
+        fetch(`${webAppUrl}?_nocache=${new Date().getTime()}`)
+            .then(response => response.json())
+            .then(data => {
+                daftarBuku = data;
+                tampilkanData();
+                document.getElementById('loadingText').classList.add('hidden');
+            })
+            .catch(error => {
+                console.error("Error ambil data:", error);
+                document.getElementById('loadingText').innerText = "Gagal memuat data cloud!";
+            });
+    }
+
+    function tambahBuku() {
+        let judul = document.getElementById('judul').value.trim();
+        let penulis = document.getElementById('penulis').value.trim();
+        let tahun = document.getElementById('tahun').value.trim();
+        let driveLink = document.getElementById('driveLink').value.trim();
+        let editId = document.getElementById('editRowId').value;
+
+        if (judul === '' || penulis === '' || tahun === '' || driveLink === '') {
+            alert('Harap isi semua kolom termasuk tahun!');
+            return;
+        }
+
+        if (!driveLink.startsWith('http://') && !driveLink.startsWith('https://')) {
+            alert('Format URL Google Drive salah!');
+            return;
+        }
+
+        const btn = document.getElementById('btnSimpan');
+        btn.disabled = true;
+        
+        let urlTarget = webAppUrl;
+        if (editId !== "") {
+            urlTarget += "?action=editRow&id=" + editId;
+            btn.innerText = "Memperbarui di Cloud...";
+        } else {
+            btn.innerText = "Menyimpan ke Cloud...";
+        }
+
+        fetch(urlTarget, {
+            method: "POST",
+            mode: "no-cors",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ judul: judul, penulis: penulis, tahun: tahun, driveLink: driveLink })
+        })
+        .then(() => {
+            resetForm();
+            // Menunggu 1.5 detik agar server Google selesai memproses penyimpanan sebelum render ulang
+            setTimeout(ambilDataDariSheets, 1500); 
+        })
+        .catch(err => {
+            console.error("Gagal memproses:", err);
+            btn.disabled = false;
+            btn.innerText = "Simpan Buku & Link";
+        });
+    }
+
+    function tampilkanData() {
+        let tbody = document.querySelector('#tabelBuku tbody');
+        tbody.innerHTML = '';
+        
+        let kataKunci = document.getElementById('cariBuku').value.toLowerCase();
+        
+        let dataDifilter = daftarBuku.filter(buku => {
+            return (buku.judul && buku.judul.toLowerCase().includes(kataKunci)) || 
+                   (buku.penulis && buku.penulis.toLowerCase().includes(kataKunci)) ||
+                   (buku.tahun && buku.tahun.toString().includes(kataKunci));
+        });
+
+        if (dataDifilter.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="5" class="no-data">Data tidak ditemukan atau masih kosong.</td></tr>`;
+            return;
+        }
+        
+        dataDifilter.forEach((buku, index) => {
+            let tombolAksiAdmin = "";
+            if (currentUserRole === 'admin') {
+                tombolAksiAdmin = `
+                    <button class="btn-edit" onclick="pemicuEdit(${buku.id}, '${escapeRegExp(buku.judul)}', '${escapeRegExp(buku.penulis)}', '${buku.tahun}', '${buku.driveLink}')">✏️ Edit</button>
+                    <button class="btn-delete" onclick="hapusSatuBaris(${buku.id}, '${escapeRegExp(buku.judul)}')">🗑️ Hapus</button>
+                `;
+            }
+
+            let row = `<tr>
+                <td>${index + 1}</td>
+                <td>${buku.judul}</td>
+                <td>${buku.penulis}</td>
+                <td>${buku.tahun || '-'}</td>
+                <td>
+                    <a href="${buku.driveLink}" target="_blank" class="btn-link">📁 Buka Drive</a>
+                    ${tombolAksiAdmin}
+                </td>
+            </tr>`;
+            tbody.innerHTML += row;
+        });
+    }
+
+    function escapeRegExp(string) {
+        return string.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+    }
+
+    function pemicuEdit(id, judul, penulis, tahun, driveLink) {
+        document.getElementById('formTitle').innerText = "📝 Edit Data Buku:";
+        document.getElementById('editRowId').value = id;
+        document.getElementById('judul').value = judul;
+        document.getElementById('penulis').value = penulis;
+        document.getElementById('tahun').value = tahun;
+        document.getElementById('driveLink').value = driveLink;
+        
+        document.getElementById('btnSimpan').innerText = "Update Perubahan Buku";
+        document.getElementById('btnBatalEdit').classList.remove('hidden');
+        document.getElementById('judul').focus();
+    }
+
+    function resetForm() {
+        document.getElementById('formTitle').innerText = "Tambah Data Buku Baru:";
+        document.getElementById('editRowId').value = "";
+        document.getElementById('judul').value = "";
+        document.getElementById('penulis').value = "";
+        document.getElementById('tahun').value = "";
+        document.getElementById('driveLink').value = "";
+        
+        let btn = document.getElementById('btnSimpan');
+        btn.disabled = false;
+        btn.innerText = "Simpan Buku & Link";
+        document.getElementById('btnBatalEdit').classList.add('hidden');
+    }
+
+    function hapusSatuBaris(id, judul) {
+        if (confirm(`Apakah Anda yakin ingin menghapus buku "${judul}"?`)) {
+            document.getElementById('loadingText').classList.remove('hidden');
+            document.getElementById('loadingText').innerText = "Menghapus data di cloud...";
+            
+            fetch(`${webAppUrl}?action=deleteRow&id=${id}`, { method: "POST", mode: "no-cors" })
+            .then(() => {
+                setTimeout(ambilDataDariSheets, 1000);
+            });
+        }
+    }
+
+    function downloadCSV() {
+        if (daftarBuku.length === 0) {
+            alert('Tidak ada data untuk didownload!');
+            return;
+        }
+        
+        let csvContent = "data:text/csv;charset=utf-8,No,Judul Buku,Penulis,Tahun,Link Google Drive\n";
+        daftarBuku.forEach((buku, index) => {
+            csvContent += `${index + 1},"${buku.judul}","${buku.penulis}","${buku.tahun}","${buku.driveLink}"\n`;
+        });
+
+        let encodedUri = encodeURI(csvContent);
+        let link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "data_perpustakaan.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    function hapusSemua() {
+        if (confirm('Apakah Anda yakin ingin menghapus seluruh baris data di Google Sheets?')) {
+            document.getElementById('loadingText').classList.remove('hidden');
+            document.getElementById('loadingText').innerText = "Menghapus seluruh data di cloud...";
+            
+            fetch(`${webAppUrl}?action=clearAll`, { method: "POST", mode: "no-cors" })
+            .then(() => {
+                setTimeout(ambilDataDariSheets, 1000);
+            });
+        }
+    }
+
+    function logout() {
+        currentUserRole = "";
+        document.getElementById('username').value = "";
+        document.getElementById('password').value = "";
+        document.getElementById('cariBuku').value = "";
+        document.getElementById('mainPage').classList.add('hidden');
+        document.getElementById('loginPage').classList.remove('hidden');
+    }
+</script>
+
+</body>
+</html>
