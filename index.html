@@ -15,7 +15,6 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            /* BACKGROUND LOGIN & BERANDA TEMA PERADILAN (MA) Sesuai image_9338f9.jpg */
             background: linear-gradient(135deg, #002d24, #004d40, #0d47a1, #001f3f);
             background-size: 400% 400%;
             animation: gradientBergerak 12s ease infinite;
@@ -31,13 +30,13 @@
         /* Container Utama & Kotak Login */
         .container { 
             width: 100%;
-            max-width: 950px; 
+            max-width: 1000px; 
             margin: auto; 
             background: rgba(255, 255, 255, 0.97); 
             padding: 25px; 
             border-radius: 12px; 
             box-shadow: 0 12px 40px rgba(0,0,0,0.3);
-            border-top: 6px solid #d4af37; /* Aksen Emas MA */
+            border-top: 6px solid #d4af37; 
         }
 
         .login-box { 
@@ -60,7 +59,6 @@
         button.download { background-color: #007bff; }
         button.clear { background-color: #dc3545; }
         
-        /* Tombol Logout Atas Hijau */
         button.logout-top { 
             background-color: #2E7D32; 
             color: white; 
@@ -73,7 +71,6 @@
         }
         button.logout-top:hover { background-color: #1B5E20; }
         
-        /* Badge Info Statistik Koleksi */
         .stats-badge {
             background-color: #ef6c00;
             color: white;
@@ -95,10 +92,9 @@
         .search-container button { width: auto; background-color: #6c757d; margin: 0; white-space: nowrap; }
 
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; font-size: 14px; }
         th { background-color: #004d40; color: white; }
         
-        /* Komponen Tombol Aksi */
         .btn-link { background-color: #ffc107; color: #212529; text-decoration: none; padding: 6px 10px; border-radius: 4px; font-size: 12px; font-weight: bold; display: inline-block; text-align: center; margin-right: 3px; }
         .btn-link:hover { background-color: #e0a800; }
         .btn-copy { background-color: #17a2b8; color: white; padding: 6px 10px; border-radius: 4px; font-size: 12px; border: none; cursor: pointer; font-weight: bold; width: auto; display: inline-block; margin-right: 3px; }
@@ -114,7 +110,7 @@
         .loading { font-style: italic; color: #007bff; margin-bottom: 10px; font-weight: bold; }
         .row-flex { display: flex; gap: 10px; }
         .row-flex input { flex: 1; }
-        .row-flex input#tahun { max-width: 150px; }
+        .row-flex input#tahun, .row-flex input#rak, .row-flex input#noBuku { max-width: 130px; }
         
         mark { background-color: #ffeb3b; color: #000; padding: 2px 0; border-radius: 2px; }
 
@@ -192,6 +188,8 @@
             <input type="text" id="judul" placeholder="Judul Buku / Dokumen">
             <input type="text" id="penulis" placeholder="Penulis / Pengarang">
             <input type="number" id="tahun" placeholder="Tahun">
+            <input type="text" id="rak" placeholder="Rak">
+            <input type="text" id="noBuku" placeholder="No. Buku">
         </div>
         <input type="url" id="driveLink" placeholder="Masukkan Tautan Google Drive (https://drive.google.com/...)">
         
@@ -199,10 +197,17 @@
             <button id="btnSimpan" onclick="tambahBuku()" style="background-color: #004d40; flex: 2;">Simpan Buku & Link</button>
             <button id="btnBatalEdit" class="clear hidden" onclick="resetForm()" style="margin: 6px 0; background-color: #78909c; flex: 1;">✕ Batal</button>
         </div>
+
+        <div style="display: flex; gap: 8px; margin-top: 10px; background: #f9f9f9; padding: 10px; border-radius: 6px; border: 1px dashed #ccc; align-items: center;">
+            <span style="font-size: 12px; font-weight: bold; color: #555;">Sistem Database:</span>
+            <button onclick="backupDataJSON()" style="background-color: #17a2b8; margin: 0; width: auto; font-size: 12px; padding: 6px 12px;">💾 Backup (JSON)</button>
+            <button onclick="pemicuRestoreJSON()" style="background-color: #6f42c1; margin: 0; width: auto; font-size: 12px; padding: 6px 12px;">🔄 Restore (JSON)</button>
+            <input type="file" id="fileRestoreInput" accept=".json" onchange="prosesRestoreJSON(event)" class="hidden">
+        </div>
     </div>
 
     <div class="search-box">
-        <label for="cariBuku" style="font-weight: bold; color: #333; display: block; margin-bottom: 5px;">🔍 Cari Buku, Penulis, atau Tahun:</label>
+        <label for="cariBuku" style="font-weight: bold; color: #333; display: block; margin-bottom: 5px;">🔍 Cari Buku, Penulis, Tahun, Rak, atau No Buku:</label>
         <div class="search-container">
             <input type="text" id="cariBuku" onkeyup="tampilkanData()" placeholder="Ketik kata kunci pencarian...">
             <button onclick="clearSearch()">Reset Cari</button>
@@ -218,8 +223,10 @@
                 <th style="width: 5%;">No</th>
                 <th>Judul Buku</th>
                 <th>Penulis</th>
-                <th style="width: 10%;">Tahun</th>
-                <th style="width: 35%;">Aksi / Link Google Drive</th>
+                <th style="width: 8%;">Tahun</th>
+                <th style="width: 8%;">Rak</th>
+                <th style="width: 10%;">No. Buku</th>
+                <th style="width: 32%;">Aksi / Link Google Drive</th>
             </tr>
         </thead>
         <tbody></tbody>
@@ -319,7 +326,6 @@
             })
             .then(data => {
                 daftarBuku = data.filter(item => item && item.id);
-                // FITUR TAMBAHAN 2: Update Counter jumlah buku otomatis
                 document.getElementById('totalBukuBadge').innerText = `📊 Total Koleksi: ${daftarBuku.length} Dokumen`;
                 tampilkanData();
                 loader.classList.add('hidden');
@@ -334,13 +340,17 @@
         let judul = document.getElementById('judul').value.trim();
         let penulis = document.getElementById('penulis').value.trim();
         let tahun = document.getElementById('tahun').value.trim();
+        let rak = document.getElementById('rak').value.trim();
+        let noBuku = document.getElementById('noBuku').value.trim();
         let driveLink = document.getElementById('driveLink').value.trim();
         let editId = document.getElementById('editRowId').value;
 
         judul = judul.replace(/"/g, "'");
         penulis = penulis.replace(/"/g, "'");
+        rak = rak.replace(/"/g, "'");
+        noBuku = noBuku.replace(/"/g, "'");
 
-        if (!judul || !penulis || !tahun || !driveLink) {
+        if (!judul || !penulis || !tahun || !rak || !noBuku || !driveLink) {
             alert('Harap lengkapi semua kolom form!');
             return;
         }
@@ -351,7 +361,6 @@
             return;
         }
 
-        // FITUR TAMBAHAN 3: Validasi Ketat Keamanan Link Google Cloud
         if (!driveLink.includes('drive.google.com') && !driveLink.includes('docs.google.com')) {
             alert('⚠️ Tautan ditolak! Pastikan Anda memasukkan tautan Google Drive atau Google Docs yang valid.');
             return;
@@ -371,6 +380,8 @@
                         `&judul=${encodeURIComponent(judul)}` +
                         `&penulis=${encodeURIComponent(penulis)}` +
                         `&tahun=${encodeURIComponent(tahun)}` +
+                        `&rak=${encodeURIComponent(rak)}` +
+                        `&noBuku=${encodeURIComponent(noBuku)}` +
                         `&driveLink=${encodeURIComponent(driveLink)}` +
                         `&_nocache=${new Date().getTime()}`;
 
@@ -394,6 +405,7 @@
     }
 
     function highlightText(text, keyword) {
+        if (!text) return '-';
         if (!keyword) return text;
         const pattern = new RegExp(`(${keyword.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')})`, 'gi');
         return text.toString().replace(pattern, '<mark>$1</mark>');
@@ -407,11 +419,13 @@
         let dataDifilter = daftarBuku.filter(buku => {
             return (buku.judul && buku.judul.toLowerCase().includes(kataKunci)) || 
                    (buku.penulis && buku.penulis.toLowerCase().includes(kataKunci)) ||
-                   (buku.tahun && buku.tahun.toString().includes(kataKunci));
+                   (buku.tahun && buku.tahun.toString().includes(kataKunci)) ||
+                   (buku.rak && buku.rak.toLowerCase().includes(kataKunci)) ||
+                   (buku.noBuku && buku.noBuku.toString().includes(kataKunci));
         });
 
         if (dataDifilter.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="5" class="no-data">Data tidak ditemukan atau database kosong.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="7" class="no-data">Data tidak ditemukan atau database kosong.</td></tr>`;
             return;
         }
         
@@ -433,6 +447,14 @@
             let tdTahun = document.createElement('td');
             tdTahun.innerHTML = kataKunci ? highlightText(buku.tahun || '-', kataKunci) : (buku.tahun || '-');
             tr.appendChild(tdTahun);
+
+            let tdRak = document.createElement('td');
+            tdRak.innerHTML = kataKunci ? highlightText(buku.rak || '-', kataKunci) : (buku.rak || '-');
+            tr.appendChild(tdRak);
+
+            let tdNoBuku = document.createElement('td');
+            tdNoBuku.innerHTML = kataKunci ? highlightText(buku.noBuku || '-', kataKunci) : (buku.noBuku || '-');
+            tr.appendChild(tdNoBuku);
 
             let tdAksi = document.createElement('td');
             
@@ -457,7 +479,7 @@
                 btnEdit.className = "btn-edit";
                 btnEdit.textContent = "✏️ Edit";
                 btnEdit.onclick = function() {
-                    pemicuEdit(buku.id, buku.judul, buku.penulis, buku.tahun, buku.driveLink);
+                    pemicuEdit(buku.id, buku.judul, buku.penulis, buku.tahun, buku.rak, buku.noBuku, buku.driveLink);
                 };
                 tdAksi.appendChild(btnEdit);
 
@@ -481,13 +503,15 @@
         document.getElementById('cariBuku').focus();
     }
 
-    function pemicuEdit(id, judul, penulis, tahun, driveLink) {
+    function pemicuEdit(id, judul, penulis, tahun, rak, noBuku, driveLink) {
         document.getElementById('formTitle').innerText = "📝 Edit Data Buku:";
         document.getElementById('editRowId').value = id;
-        document.getElementById('judul').value = judul;
-        document.getElementById('penulis').value = penulis;
-        document.getElementById('tahun').value = tahun;
-        document.getElementById('driveLink').value = driveLink;
+        document.getElementById('judul').value = judul || "";
+        document.getElementById('penulis').value = penulis || "";
+        document.getElementById('tahun').value = tahun || "";
+        document.getElementById('rak').value = rak || "";
+        document.getElementById('noBuku').value = noBuku || "";
+        document.getElementById('driveLink').value = driveLink || "";
         document.getElementById('btnSimpan').innerText = "Update Perubahan Buku";
         document.getElementById('btnBatalEdit').classList.remove('hidden');
         document.getElementById('judul').focus();
@@ -499,6 +523,8 @@
         document.getElementById('judul').value = "";
         document.getElementById('penulis').value = "";
         document.getElementById('tahun').value = "";
+        document.getElementById('rak').value = "";
+        document.getElementById('noBuku').value = "";
         document.getElementById('driveLink').value = "";
         let btn = document.getElementById('btnSimpan');
         btn.disabled = false;
@@ -518,9 +544,9 @@
 
     function downloadCSV() {
         if (daftarBuku.length === 0) { alert('Tidak ada data!'); return; }
-        let csvContent = "\uFEFFNo;Judul Buku;Penulis;Tahun;Link Google Drive\n";
+        let csvContent = "\uFEFFNo;Judul Buku;Penulis;Tahun;Rak;No Buku;Link Google Drive\n";
         daftarBuku.forEach((buku, index) => {
-            csvContent += `${index + 1};"${(buku.judul || '-').replace(/"/g, '""')}";"${(buku.penulis || '-').replace(/"/g, '""')}";"${buku.tahun || '-'}";"${buku.driveLink || '-'}"\n`;
+            csvContent += `${index + 1};"${(buku.judul || '-').replace(/"/g, '""')}";"${(buku.penulis || '-').replace(/"/g, '""')}";"${buku.tahun || '-'}";"${(buku.rak || '-').replace(/"/g, '""')}";"${(buku.noBuku || '-').replace(/"/g, '""')}";"${buku.driveLink || '-'}"\n`;
         });
         let blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
         let link = document.createElement("a");
@@ -538,6 +564,109 @@
             fetch(`${webAppUrl}?action=clearAll&token=${apiKey}&_nocache=${new Date().getTime()}`)
             .then(() => { ambilDataDariSheets(); });
         }
+    }
+
+    function backupDataJSON() {
+        if (daftarBuku.length === 0) {
+            alert('Tidak ada data perpustakaan yang dapat dibackup!');
+            return;
+        }
+        let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(daftarBuku, null, 2));
+        let downloadAnchor = document.createElement('a');
+        downloadAnchor.setAttribute("href", dataStr);
+        downloadAnchor.setAttribute("download", "BACKUP_KALEA_" + new Date().toISOString().slice(0,10) + ".json");
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        downloadAnchor.removeChild();
+    }
+
+    function pemicuRestoreJSON() {
+        if (currentUserRole !== 'admin') return;
+        document.getElementById('fileRestoreInput').click();
+    }
+
+    /* LOGIKA RESTORE DIPERBARUI: MENCEGAH DUPLIKASI DATA */
+    function prosesRestoreJSON(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const importedData = JSON.parse(e.target.result);
+                if (!Array.isArray(importedData)) throw new Error("Format file salah.");
+
+                // Memisahkan data mana yang belum ada di database, dan data mana yang sudah ada (duplikat)
+                let dataAkanDiunggah = [];
+                let jumlahDuplikat = 0;
+
+                importedData.forEach(bukuBaru => {
+                    // Cek berdasarkan judul dan penulis (abaikan spasi dan huruf besar/kecil)
+                    let cekDuplikat = daftarBuku.some(bukuLama => 
+                        (bukuLama.judul || '').trim().toLowerCase() === (bukuBaru.judul || '').trim().toLowerCase() &&
+                        (bukuLama.penulis || '').trim().toLowerCase() === (bukuBaru.penulis || '').trim().toLowerCase()
+                    );
+
+                    if (cekDuplikat) {
+                        jumlahDuplikat++;
+                    } else {
+                        dataAkanDiunggah.push(bukuBaru);
+                    }
+                });
+
+                if (dataAkanDiunggah.length === 0) {
+                    alert(`Sistem membatalkan proses.\nSemua data (${jumlahDuplikat} dokumen) di dalam file backup sudah ada di database perpustakaan.`);
+                    event.target.value = '';
+                    return;
+                }
+
+                let konfirmasiPesan = `Sistem mendeteksi total ${importedData.length} data dalam berkas:\n` +
+                                      `- Data Baru (Akan ditambahkan): ${dataAkanDiunggah.length}\n` +
+                                      `- Data Duplikat (Akan dilewati/skip): ${jumlahDuplikat}\n\n` +
+                                      `Apakah Anda yakin ingin melakukan restore data baru ke Google Sheets?`;
+
+                if (confirm(konfirmasiPesan)) {
+                    document.getElementById('loadingText').classList.remove('hidden');
+                    document.getElementById('loadingText').innerText = "Sedang merestore berkas ke Cloud Google Sheets...";
+                    
+                    let hitungSukses = 0;
+                    let promises = dataAkanDiunggah.map(buku => {
+                        let tJudul = (buku.judul || '-').replace(/"/g, "'");
+                        let tPenulis = (buku.penulis || '-').replace(/"/g, "'");
+                        let tTahun = buku.tahun || '2026';
+                        let tRak = buku.rak || '-';
+                        let tNoBuku = buku.noBuku || '-';
+                        let tLink = buku.driveLink || '#';
+
+                        let uploadUrl = `${webAppUrl}?action=addRow&token=${apiKey}` +
+                                        `&judul=${encodeURIComponent(tJudul)}` +
+                                        `&penulis=${encodeURIComponent(tPenulis)}` +
+                                        `&tahun=${encodeURIComponent(tTahun)}` +
+                                        `&rak=${encodeURIComponent(tRak)}` +
+                                        `&noBuku=${encodeURIComponent(tNoBuku)}` +
+                                        `&driveLink=${encodeURIComponent(tLink)}` +
+                                        `&_nocache=${new Date().getTime()}`;
+                        
+                        return fetch(uploadUrl)
+                            .then(res => res.json())
+                            .then(resData => {
+                                if (resData.status === "success" || resData.result === "success") hitungSukses++;
+                            })
+                            .catch(err => console.error("Gagal restore:", err));
+                    });
+
+                    Promise.all(promises).then(() => {
+                        alert(`Restore Selesai!\nBerhasil menambahkan ${hitungSukses} data baru.\nSebanyak ${jumlahDuplikat} data lama dilewati agar tidak ganda.`);
+                        event.target.value = ''; 
+                        ambilDataDariSheets();
+                    });
+                }
+            } catch (err) {
+                alert("Gagal membaca file! Pastikan file tersebut adalah file backup .json KALEA yang valid.");
+                event.target.value = '';
+            }
+        };
+        reader.readAsText(file);
     }
 
     function logout() {
